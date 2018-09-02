@@ -1,6 +1,12 @@
 var spaceVerb = new p5.Reverb();
+var spaceDel = new p5.Delay();
+var comp = new p5.Compressor();
+comp.set(0.003, 30, 25, -24, 0.25)
 var circleArr = [];
 var index = 0;
+var noteScale = [220, 247, 262, 294, 330, 349, 392, 440]
+var maj = [262, 294, 330, 349, 392, 440, 494]
+
 
 class Ellipse {
   constructor(initX, initY, velocity) {
@@ -13,7 +19,7 @@ class Ellipse {
     this.mass = map(this.scale, 0, 100, 2, 2)
     this.collided = []
 
-    this.mu = 0.005;
+    this.mu = 0.00005;
     this.normal = 1;
 
     //color stuff
@@ -34,11 +40,26 @@ class Ellipse {
     this.osc.disconnect();
     this.osc.connect(this.filter);
     this.osc.setType('triangle');
-    this.oscFreq = map(this.scale, 100, 0, 150, 1000)
+    this.oscFreq = this.closestNote(map(this.scale, 50, 10, 220, 440), noteScale) * 2;
+    // console.log(this.oscFreq)
     this.osc.freq(this.oscFreq);
     this.osc.amp(map(this.scale, 0, 100, 0.05, 0.5));
-    spaceVerb.process(this.filter, 5, 2)
+    this.filter.disconnect();
+    comp.process(this.filter);
+    spaceVerb.process(comp, 7, 1)
+    spaceDel.process(comp, 0.7, .5, 400)
     this.osc.start();
+  }
+
+  closestNote (num, arr) {
+    let curr = arr[0]
+    console.log(arr)
+    for (let i = 0; i < arr.length; i++) {
+      if (Math.abs(num - arr[i]) < Math.abs(num - curr)) {
+        curr = arr[i]
+      }
+    }
+    return curr
   }
 
   applyForce(force) {
@@ -50,13 +71,17 @@ class Ellipse {
     // this is dumb, needs to be fixed, do not use
     circleArr.forEach((circ) => {
       if (this.index !== circ.index && !this.collided.includes(circ.index)) {
-        if( dist( this.loc.x, this.loc.y, circ.loc.x, circ.loc.y) < (this.scale / 2 + circ.scale / 2) ) {
-          this.collide(false, false);
-          this.applyForce(circ.velocity)
-          circ.applyForce(this.velocity);
-          circ.collide(false, false);
-          circ.collided.push(this.index)
-        }
+        let distance = dist( this.loc.x, this.loc.y, circ.loc.x, circ.loc.y)
+        let testVec = createVector(this.loc.x - circ.loc.x, this.loc.y - circ.loc.y);
+        testVec.normalize();
+        this.applyForce(testVec.div(distance / 2))
+        // if( dist( this.loc.x, this.loc.y, circ.loc.x, circ.loc.y) < (this.scale / 2 + circ.scale / 2) ) {
+        //   this.collide(false, false);
+        //   this.applyForce(circ.velocity)
+        //   circ.applyForce(this.velocity);
+        //   circ.collide(false, false);
+        //   circ.collided.push(this.index)
+        // }
       }
     })
   }
@@ -86,6 +111,8 @@ class Ellipse {
     }
   }
 
+
+
   friction() {
     let frictionMag = this.mu * this.normal;
     let friction = this.velocity.copy();
@@ -96,18 +123,23 @@ class Ellipse {
   }
 
   update() {
-    this.filter.freq(max(0, this.filterFreq -= map(this.scale, 100, 0, 0.5, 15)))
+    this.filterFreq = max(0, this.filterFreq -= map(this.scale, 100, 0, 0.5, 10))
+    this.filter.freq(this.filterFreq)
     this.colorScale -= 0.002;
     this.velocity.add(this.accel)
-    this.limit(10);
+    this.limit(4);
     this.loc.add(this.velocity)
     this.collided = []
     this.accel.mult(0)
   }
 
   draw() {
+    let expand = map(this.filterFreq, 0, this.oscFreq, this.scale, this.scale * 1.6)
+    fill(this.color.r, this.color.g, this.color.b, expand - this.scale)
+    ellipse(this.loc.x, this.loc.y, expand, expand);
     fill(color(this.color.r * this.colorScale, this.color.g * this.colorScale, this.color.b * this.colorScale, this.color.a));
     noStroke();
     ellipse(this.loc.x, this.loc.y, this.scale, this.scale)
+
   }
 }
