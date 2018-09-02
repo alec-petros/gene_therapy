@@ -8,9 +8,9 @@ var circleArr = [];
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight, WEBGL);
-  initV = createVector(randomInt(5), randomInt(5))
+  initV = createVector(randomInt(1), randomInt(1))
   boy = new Ellipse(50, 50, initV)
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 5; i++) {
     circleArr.push(new Ellipse(randomInt(100), randomInt(100), createVector(randomInt(5), randomInt(5))))
   }
 }
