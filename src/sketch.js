@@ -11,7 +11,7 @@ function setup() {
   initV = createVector(randomInt(1), randomInt(1))
   boy = new Ellipse(50, 50, initV)
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     circleArr.push(new Ellipse(randomInt(window.innerWidth - 100), randomInt(window.innerHeight - 100), createVector(randomInt(5), randomInt(5))))
   }
   background(0);
@@ -21,8 +21,10 @@ function draw() {
   background(0)
 
   for (let i = 0; i < circleArr.length; i++) {
-    let gravity = createVector(0, 0.1 * circleArr[i].mass);
+    let gravity = createVector(0, 0.2 * circleArr[i].mass);
     circleArr[i].applyForce(gravity);
+    // circleArr[i].checkCollision();
+    circleArr[i].friction();
     circleArr[i].update();
     circleArr[i].draw();
     circleArr[i].checkWall()

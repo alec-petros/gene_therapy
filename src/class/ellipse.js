@@ -10,7 +10,11 @@ class Ellipse {
     this.accel = createVector(0, 0.005)
     this.velocity = velocity
     this.scale = Math.random() * 100;
-    this.mass = map(this.scale, 0, 100, 1, 10)
+    this.mass = map(this.scale, 0, 100, 1, 1)
+    this.collided = []
+
+    this.mu = 0.01;
+    this.normal = 1;
 
     //color stuff
     this.colorScale = 1;
@@ -43,12 +47,13 @@ class Ellipse {
 
   checkCollision() {
     circleArr.forEach((circ) => {
-      if (this.index !== circ.index) {
-        if( dist( this.loc.x, this.loc.y, circ.loc.x, circ.loc.y) < (this.scale / 2 + circ.scale / 2 + 10) ) {
+      if (this.index !== circ.index && !this.collided.includes(circ.index)) {
+        if( dist( this.loc.x, this.loc.y, circ.loc.x, circ.loc.y) < (this.scale / 2 + circ.scale / 2) ) {
           this.collide(false, false);
           this.applyForce(circ.velocity)
           circ.applyForce(this.velocity);
           circ.collide(false, false);
+          circ.collided.push(this.index)
         }
       }
     })
@@ -72,6 +77,15 @@ class Ellipse {
       this.collide(false, true)
       this.velocity.y *= -1
     }
+  }
+
+  friction() {
+    let frictionMag = this.mu * this.normal;
+    let friction = this.velocity.copy();
+    friction.normalize();
+    friction.mult(-1);
+    friction.mult(frictionMag);
+    this.applyForce(friction);
   }
 
   update() {
