@@ -9,11 +9,11 @@ class Ellipse {
     this.loc = createVector(initX, initY);
     this.accel = createVector(0, 0.005)
     this.velocity = velocity
-    this.scale = Math.random() * 100;
-    this.mass = map(this.scale, 0, 100, 1, 1)
+    this.scale = map(Math.random(), 0, 1, 10, 50);
+    this.mass = map(this.scale, 0, 100, 2, 2)
     this.collided = []
 
-    this.mu = 0.01;
+    this.mu = 0.005;
     this.normal = 1;
 
     //color stuff
@@ -21,7 +21,8 @@ class Ellipse {
     this.color = {
       r: map(this.velocity.x, -2.5, 2.5, 0, 255),
       g: map(this.scale, 0, 100, 0, 255),
-      b: map(this.velocity.y, -2.5, 2.5, 0, 255)
+      b: map(this.velocity.y, -2.5, 2.5, 0, 255),
+      a: 200
     }
 
     // osc stuff
@@ -42,10 +43,11 @@ class Ellipse {
 
   applyForce(force) {
     var f = p5.Vector.div(force, this.mass)
-    this.accel.add(f)
+    this.accel.add(force)
   }
 
   checkCollision() {
+    // this is dumb, needs to be fixed, do not use
     circleArr.forEach((circ) => {
       if (this.index !== circ.index && !this.collided.includes(circ.index)) {
         if( dist( this.loc.x, this.loc.y, circ.loc.x, circ.loc.y) < (this.scale / 2 + circ.scale / 2) ) {
@@ -66,6 +68,11 @@ class Ellipse {
 
   collide(x, y) {
     this.beep()
+  }
+
+  limit(max) {
+    this.velocity.x = min(10, this.velocity.x);
+    this.velocity.y = min(10, this.velocity.y);
   }
 
   checkWall() {
@@ -92,12 +99,14 @@ class Ellipse {
     this.filter.freq(max(0, this.filterFreq -= map(this.scale, 100, 0, 0.5, 15)))
     this.colorScale -= 0.002;
     this.velocity.add(this.accel)
+    this.limit(10);
     this.loc.add(this.velocity)
+    this.collided = []
     this.accel.mult(0)
   }
 
   draw() {
-    fill(color(this.color.r * this.colorScale, this.color.g * this.colorScale, this.color.b * this.colorScale));
+    fill(color(this.color.r * this.colorScale, this.color.g * this.colorScale, this.color.b * this.colorScale, this.color.a));
     noStroke();
     ellipse(this.loc.x, this.loc.y, this.scale, this.scale)
   }
