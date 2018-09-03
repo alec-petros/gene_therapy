@@ -47,7 +47,6 @@ class Chordguy {
   checkColl() {
     circleArr.forEach((circ) => {
       if (circ.loc.x > this.x && circ.loc.x < this.x + this.width && circ.loc.y > this.y && circ.loc.y < this.y + this.height) {
-        circ.filterFreq = min(circ.filterFreq + 30, circ.oscFreq);
         this.filterFreq = min(this.oscFreq, this.filterFreq + 3);
         this.currentFreq = this.oscFreq;
         this.osc.freq(this.currentFreq);
