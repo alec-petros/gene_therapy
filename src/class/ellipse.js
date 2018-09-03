@@ -24,7 +24,7 @@ class Ellipse {
     this.loc = createVector(initX, initY);
     this.accel = createVector(0, 0.005)
     this.velocity = velocity
-    this.scale = map(Math.random(), 0, 1, 10, 50);
+    this.scale = map(Math.random(), 0, 1, 20, 60);
     this.mass = map(this.scale, 0, 100, 2, 2)
     this.collided = []
 
@@ -34,9 +34,9 @@ class Ellipse {
     //color stuff
     this.colorScale = 1;
     this.color = {
-      r: map(this.velocity.x, -2.5, 2.5, 0, 255),
-      g: map(this.scale, 0, 100, 0, 255),
-      b: map(this.velocity.y, -2.5, 2.5, 0, 255),
+      r: map(this.velocity.x, -1.5, 1.5, 0, 255),
+      g: map(this.scale, 20, 60, 0, 230),
+      b: map(this.velocity.y, -1.5, 1.5, 0, 255),
       a: 200
     }
 
@@ -49,7 +49,7 @@ class Ellipse {
     this.osc.disconnect();
     this.osc.connect(this.filter);
     this.osc.setType('triangle');
-    this.oscFreq = this.closestNote(map(this.scale, 50, 10, 175, 587), noteScale) * 2;
+    this.oscFreq = this.closestNote(map(this.scale, 60, 15, 175, 587), noteScale) * 2;
     // console.log(this.oscFreq)
     this.osc.freq(this.oscFreq);
     this.osc.amp(map(this.scale, 0, 100, 0.05, 0.1));
