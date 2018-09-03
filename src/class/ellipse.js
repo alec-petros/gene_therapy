@@ -1,10 +1,19 @@
 var spaceVerb = new p5.Reverb();
 var spaceDel = new p5.Delay();
+var fft = new p5.FFT();
 var comp = new p5.Compressor();
 comp.set(0.003, 30, 25, -24, 0.25)
+var hipass = new p5.HighPass();
+hipass.freq(60);
+hipass.res(0);
+comp.disconnect();
+comp.connect(hipass);
+spaceVerb.process(hipass, 7, 1)
+spaceDel.process(hipass, 0.7, .5, 400)
+hipass.connect(fft)
 var circleArr = [];
 var index = 0;
-var noteScale = [220, 247, 262, 294, 330, 349, 392, 440]
+var noteScale = [175, 220, 262, 330, 392, 440, 494, 523.25, 587.33]
 var maj = [262, 294, 330, 349, 392, 440, 494]
 
 
@@ -36,24 +45,21 @@ class Ellipse {
     this.filter = new p5.LowPass()
     this.filterFreq = 0;
     this.filter.freq(this.filterFreq)
-    this.filter.res(2);
+    this.filter.res(0);
     this.osc.disconnect();
     this.osc.connect(this.filter);
     this.osc.setType('triangle');
-    this.oscFreq = this.closestNote(map(this.scale, 50, 10, 220, 440), noteScale) * 2;
+    this.oscFreq = this.closestNote(map(this.scale, 50, 10, 175, 587), noteScale) * 2;
     // console.log(this.oscFreq)
     this.osc.freq(this.oscFreq);
-    this.osc.amp(map(this.scale, 0, 100, 0.05, 0.5));
+    this.osc.amp(map(this.scale, 0, 100, 0.05, 0.1));
     this.filter.disconnect();
     comp.process(this.filter);
-    spaceVerb.process(comp, 7, 1)
-    spaceDel.process(comp, 0.7, .5, 400)
     this.osc.start();
   }
 
   closestNote (num, arr) {
     let curr = arr[0]
-    console.log(arr)
     for (let i = 0; i < arr.length; i++) {
       if (Math.abs(num - arr[i]) < Math.abs(num - curr)) {
         curr = arr[i]
@@ -75,6 +81,8 @@ class Ellipse {
         let testVec = createVector(this.loc.x - circ.loc.x, this.loc.y - circ.loc.y);
         testVec.normalize();
         this.applyForce(testVec.div(distance / 2))
+        stroke(255, 255, 255, 50);
+        line(this.loc.x, this.loc.y, circ.loc.x, circ.loc.y);
         // if( dist( this.loc.x, this.loc.y, circ.loc.x, circ.loc.y) < (this.scale / 2 + circ.scale / 2) ) {
         //   this.collide(false, false);
         //   this.applyForce(circ.velocity)
@@ -127,7 +135,7 @@ class Ellipse {
     this.filter.freq(this.filterFreq)
     this.colorScale -= 0.002;
     this.velocity.add(this.accel)
-    this.limit(4);
+    this.limit(3);
     this.loc.add(this.velocity)
     this.collided = []
     this.accel.mult(0)
@@ -135,10 +143,10 @@ class Ellipse {
 
   draw() {
     let expand = map(this.filterFreq, 0, this.oscFreq, this.scale, this.scale * 1.6)
+    noStroke();
     fill(this.color.r, this.color.g, this.color.b, expand - this.scale)
     ellipse(this.loc.x, this.loc.y, expand, expand);
     fill(color(this.color.r * this.colorScale, this.color.g * this.colorScale, this.color.b * this.colorScale, this.color.a));
-    noStroke();
     ellipse(this.loc.x, this.loc.y, this.scale, this.scale)
 
   }

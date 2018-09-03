@@ -1,0 +1,78 @@
+#title {
+  position: absolute;
+  display: inline-block;
+  width: 100%;
+  top: 50%;
+  text-align: center;
+  color: white;
+  z-index: 4;
+  animation: titleShow 10s;
+  opacity: 0;
+  font-family: Montserrat;
+  font-size: 10vh;
+  font-weight: 800;
+  letter-spacing: 6vh;
+}
+
+#filler {
+  position: absolute;
+  display: inline-block;
+  width: 100%;
+  top: 50%;
+  text-align: center;
+  color: white;
+  z-index: 4;
+  animation: fillerShow 20s;
+  opacity: 0;
+  font-family: Montserrat;
+  font-size: 10vh;
+  font-weight: 800;
+  letter-spacing: 6vh;
+}
+
+@keyframes titleShow {
+  0% {
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fillerShow {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+#defaultCanvas0 {
+  position: absolute;
+  display: inline-block;
+  top: 0%;
+
+}
