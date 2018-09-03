@@ -14,8 +14,8 @@ function setup() {
     chordArr.push(new Chordguy(
       randomInt(window.innerWidth),
       randomInt(window.innerHeight),
-      Math.random() * 300,
-      Math.random() * 300)
+      map(Math.random(), 0, 1, 20, 300),
+      map(Math.random(), 0, 1, 20, 300))
     )
   }
   // chordArr.push(new Chordguy(-100, -11, 500, 300));
